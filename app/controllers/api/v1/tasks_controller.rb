@@ -11,12 +11,23 @@ class Api::V1::TasksController < Api::V1::BaseController
 		respond_with Task.destroy(params[:id])
 	end
 
-	def update task = Task.find(params["id"])
-		task.update_attributes(task_params)
+	def update
+		task = Task.find(params["id"])
+		attributes = task_params.clone
+		attributes[:isEditable] = false
+		task.update_attributes(attributes)
 		respond_with task, json: task
 	end 
 
+	def setIsEditable
+		task = Task.find(params["id"])
+		attributes = task_params.clone
+		attributes[:isEditable] = true
+		task.update_attributes(attributes)
+		respond_with task, json: task
+	end
+
 	private def task_params 
-		params.require(:task).permit(:id, :name, :description)
+		params.require(:task).permit(:id, :name, :isCompleted, :isEditable)
 	end
 end
