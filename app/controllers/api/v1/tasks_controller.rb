@@ -27,6 +27,14 @@ class Api::V1::TasksController < Api::V1::BaseController
 		respond_with task, json: task
 	end
 
+	def toggleAll
+		tasks = Task.all
+		tasks.each do |task|
+			task.update_attributes(:isCompleted => params["toggleParam"])
+		end
+		respond_with tasks, json: tasks
+	end
+
 	private def task_params 
 		params.require(:task).permit(:id, :name, :isCompleted, :isEditable)
 	end
