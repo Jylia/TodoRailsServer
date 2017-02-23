@@ -8,7 +8,7 @@ class Api::V1::TasksController < Api::V1::BaseController
 	end
 		
 	def destroy
-		respond_with Task.destroy(params[:id])
+		respond_with Task.destroy(params[:id]), json: Task.all
 	end
 
 	def update
