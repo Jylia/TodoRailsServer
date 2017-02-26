@@ -4,7 +4,7 @@ class Api::V1::TasksController < Api::V1::BaseController
 	end
 
 	def create
-		respond_with :api, :v1, Task.create(task_params)
+		respond_with :api, :v1, Task.create(task_params), json: Task.all
 	end
 		
 	def destroy
