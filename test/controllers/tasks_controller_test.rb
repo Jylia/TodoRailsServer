@@ -2,47 +2,47 @@ require 'test_helper'
 
 class TasksControllerTest < ActionDispatch::IntegrationTest
   setup do
-    @task = tasks(:one)
+    @task1 = tasks(:one)
+    @task2 = tasks(:two)
   end
 
   test "should get index" do
-    get tasks_url
-    assert_response :success
-  end
-
-  test "should get new" do
-    get new_task_url
-    assert_response :success
+    get api_v1_tasks_url
+    assert_not nil
+    assert_equal(Task.all.count, JSON.parse(response.body).size) 
   end
 
   test "should create task" do
     assert_difference('Task.count') do
-      post tasks_url, params: { task: { isCompleted: @task.isCompleted, isEditable: @task.isEditable, name: @task.name } }
+      post api_v1_tasks_url, params: { task: { isCompleted: @task1.isCompleted, isEditable: @task1.isEditable, name: @task1.name } }
     end
-
-    assert_redirected_to task_url(Task.last)
-  end
-
-  test "should show task" do
-    get task_url(@task)
-    assert_response :success
-  end
-
-  test "should get edit" do
-    get edit_task_url(@task)
-    assert_response :success
   end
 
   test "should update task" do
-    patch task_url(@task), params: { task: { isCompleted: @task.isCompleted, isEditable: @task.isEditable, name: @task.name } }
-    assert_redirected_to task_url(@task)
+    patch api_v1_task_url(@task1), params: { task: { name: 'MyString1_updated' } }
+    assert_equal("MyString1_updated", JSON.parse(response.body)["name"])
   end
 
   test "should destroy task" do
     assert_difference('Task.count', -1) do
-      delete task_url(@task)
+      delete api_v1_task_url(@task1)
     end
+  end
 
-    assert_redirected_to tasks_url
+  test "should update task as editable" do
+    put api_v1_task_is_editable_set_url(@task1), params: { task: { isEditable: @task1.isEditable } }
+    assert_equal(true, JSON.parse(response.body)["isEditable"])
+    put api_v1_task_is_editable_set_url(@task2), params: { task: { isEditable: @task2.isEditable } }
+    assert_equal(true, JSON.parse(response.body)["isEditable"])
+  end
+
+  test "should toggle all tasks" do
+    put api_v1_task_toggle_all_url(:toggleParam => true)
+    assert_equal(JSON.parse(response.body)[0]["isCompleted"], true)
+    assert_equal(JSON.parse(response.body)[0]["isCompleted"], true)
+    
+    put api_v1_task_toggle_all_url(:toggleParam => 0)
+    assert_equal(JSON.parse(response.body)[0]["isCompleted"], false)
+    assert_equal(JSON.parse(response.body)[1]["isCompleted"], false)
   end
 end
