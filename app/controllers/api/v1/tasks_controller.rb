@@ -36,6 +36,6 @@ class Api::V1::TasksController < Api::V1::BaseController
 	end
 
 	private def task_params 
-		params.require(:task).permit(:id, :name, :isCompleted, :isEditable)
+		params.require(:task).permit(:id, :name, :isCompleted, :isEditable, :dueDate, :priority)
 	end
 end
